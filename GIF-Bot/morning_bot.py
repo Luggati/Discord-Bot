@@ -6,6 +6,7 @@ import os
 
 
 TOKEN = os.getenv('DISCORD_BOT_TOKEN')
+TENOR_API_KEY = os.getenv('TENOR_API_KEY')
 
 CHANNEL_ID =667399686998720516
 
@@ -16,6 +17,16 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
+
+GIFS = {
+    'Monday': 'Monday motivation',
+    'Tuesday': 'Tuesday motivation',
+    'Wednesday': 'Wednesday my dudes',
+    'Thursday': 'Thursday vibes',
+    'Friday': 'Friday feeling',
+    'Saturday': 'Saturday',
+    'Sunday': 'Sunday relaxation'
+}
 
 @tasks.loop(time=time(7, 0, tzinfo=timezone(timedelta(hours=2))))
 async def send_morning_gif():
@@ -34,9 +45,15 @@ async def on_ready():
         await bot.close()
 
 
-@bot.command(name='Lucastinkt')
+@bot.command(name='bruh')
 async def send_bruh(ctx):
     await ctx.send(GIF_LINK)
+
+
+@bot.command(name='Lucastinkt')
+async def send_bruh(ctx):
+    await ctx.send(SASCHA_LINK)
+
 
 async def on_disconnect():
     print('Disconnected')
