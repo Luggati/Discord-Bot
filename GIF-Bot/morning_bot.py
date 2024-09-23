@@ -36,12 +36,10 @@ def tenor_gif(keyword):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        print("API Response:", data)
         gifs = data.get('results', [])
         if gifs:
             gif_index = random.randint(0, len(gifs) - 1)
             gif_url = gifs[gif_index]['media_formats']['gif']['url']
-            print(f"Extracted GIF URL: {gif_url}")
             return gif_url
         else:
             print(f"No gifs found for {keyword}")
