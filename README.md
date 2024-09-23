@@ -20,5 +20,5 @@ A Discord bot that sends random motivational GIFs based on the day of the week. 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/discord-bot-gif-guy.git
-cd discord-bot-gif-guy
+git clone https://github.com/Luggati/Discord-Bot.git
+cd Discord-Bot
