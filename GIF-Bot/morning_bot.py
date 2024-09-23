@@ -1,8 +1,10 @@
+import random
 import discord
 import asyncio
 from discord.ext import commands, tasks
 from datetime import datetime, time, timezone, timedelta
 import os
+import requests
 
 
 TOKEN = os.getenv('DISCORD_BOT_TOKEN')
@@ -18,7 +20,7 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-GIFS = {
+DAY_KEYWORDS = {
     'Monday': 'Monday motivation',
     'Tuesday': 'Tuesday motivation',
     'Wednesday': 'Wednesday my dudes',
@@ -28,21 +30,42 @@ GIFS = {
     'Sunday': 'Sunday relaxation'
 }
 
-@tasks.loop(time=time(7, 0, tzinfo=timezone(timedelta(hours=2))))
-async def send_morning_gif():
-    channel = bot.get_channel(CHANNEL_ID)
-    if channel:
-        await channel.send(GIF_LINK)
+
+def tenor_gif(keyword):
+    url = f"https://tenor.googleapis.com/v2/search?q={keyword}&key={TENOR_API_KEY}&limit=10&media_filter=minimal"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        print("API Response:", data)
+        gifs = data.get('results', [])
+        if gifs:
+            gif_index = random.randint(0, len(gifs) - 1)
+            gif_url = gifs[gif_index]['media_formats']['gif']['url']
+            print(f"Extracted GIF URL: {gif_url}")
+            return gif_url
+        else:
+            print(f"No gifs found for {keyword}")
+    else:
+        print(f"Failed to fetch GIFs for keyword: {keyword}. Status Code: {response.status_code}")
+    return None
 
 
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}')
-    send_morning_gif()
-    channel =bot.get_channel(CHANNEL_ID)
+    channel = bot.get_channel(CHANNEL_ID)
+    today = datetime.now().strftime('%A')
+    keyword = DAY_KEYWORDS.get(today)
+    gif_link = tenor_gif(keyword)
     if channel:
-        await channel.send(GIF_LINK)
-        await bot.close()
+        if gif_link:
+            try:
+                await channel.send(gif_link)
+            except Exception as e:
+                print(f"Error sending message: {e}")
+        else:
+            print("No GIF found for today.")
+    await bot.close()
 
 
 @bot.command(name='bruh')
